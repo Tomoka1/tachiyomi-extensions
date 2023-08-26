@@ -66,7 +66,6 @@ class Collectedcurios : ParsedHttpSource() {
     }
 
     override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> {
-        // return Observable.just(MangasPage(emptyList(), false))
         return fetchPopularManga(1)
     }
 
@@ -91,8 +90,8 @@ class Collectedcurios : ParsedHttpSource() {
         for (i in chapters?.downTo(1)!!) {
             chapterList.add(
                 SChapter.create().apply {
-                    url = listOf(response.request.url, "?s=", i).joinToString("")
-                    name = listOf("Chapter", i).joinToString(" - ")
+                    url = "${response.request.url}?s=$i"
+                    name = "Chapter - $i"
                     chapter_number = i.toFloat()
                     date_upload = 0L
                 },
