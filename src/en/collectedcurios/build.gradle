@@ -6,7 +6,7 @@ ext {
     extName = 'Collectedcurios by Jolly Jack'
     pkgNameSuffix = 'en.collectedcurios'
     extClass = '.Collectedcurios'
-    extVersionCode = 2
+    extVersionCode = 1
 }
 
 apply from: "$rootDir/common.gradle"
