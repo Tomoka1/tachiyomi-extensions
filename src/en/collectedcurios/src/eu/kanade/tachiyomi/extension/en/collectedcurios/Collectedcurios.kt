@@ -103,8 +103,7 @@ class Collectedcurios : ParsedHttpSource() {
     override fun chapterListSelector() = throw Exception("Not used")
 
     override fun chapterFromElement(element: Element) = SChapter.create().apply {
-        name = element.selectFirst(".w3-round")?.attr("value")!!.ifBlank { "date" }
-        date_upload = 0L
+        name = element.selectFirst(".w3-round")?.attr("value") ?: "Chapter"
     }
 
     override fun pageListParse(document: Document): List<Page> = throw Exception("Not used")
@@ -112,26 +111,15 @@ class Collectedcurios : ParsedHttpSource() {
     override fun fetchPageList(chapter: SChapter) = Observable.just(listOf(Page(0, chapter.url)))!!
 
     override fun imageUrlParse(response: Response): String {
-        val ccResponse = response.request.url.toString()
-        when {
-            ccResponse.contains("sequentialart") -> {
-                val imageName = response.asJsoup().selectFirst(".w3-image")?.attr("src")
-                return listOf(baseUrl, imageName).joinToString("/")
-            }
-
-            ccResponse.contains("battlebunnies") -> {
-                val imageName = response.asJsoup().selectFirst("img[id=strip]")?.attr("src")
-                return listOf(baseUrl, imageName).joinToString("/")
-            }
-
-            ccResponse.contains("spiderandscorpion") -> {
-                val imageName = response.asJsoup().selectFirst("img[id=strip]")?.attr("src")
-                return listOf(baseUrl, imageName).joinToString("/")
-            }
-
-            else -> {
-                return listOf("", "").joinToString("/")
-            }
+        val url = response.request.url.toString()
+        val document = response.asJsoup()
+        
+        return when {
+            url.contains("sequentialart") ->
+                document.selectFirst(".w3-image")!!.absUrl("src")
+            url.contains("battlebunnies") || url.contains("spiderandscorpion") ->
+                document.selectFirst("#strip")!!.absUrl("src")
+            else -> throw Exception("Could not find the image")
         }
     }
 
